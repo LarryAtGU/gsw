@@ -22,13 +22,13 @@ const MAX_SHEEP_DENSITY = 0.01; // every piexl can have 0.01 sheep
 const INIT_SHEEP_NUM = 15; // the initial sheep num
 const INIT_SHEEP_GEN = 50; // sheep appear after 50 generation.
 const SHEEP_CHANGE_DIR_RATE = 5; // how likely a sheep will change moving direction
-const SHEEP_EAT_VOL = 50;
-const SHEEP_BORN_RATE = 5;
-const SHEEP_LIFE = 100;
-const SHEEP_DIE_RATE = 20;
-const SHEEP_SPEED = 2;
+const SHEEP_EAT_VOL = 50; // how much grass consumed by a sheep in each year
+const SHEEP_BORN_RATE = 5; // 5 equals 5% chance to have a baby if health is good and age is right
+const SHEEP_LIFE = 100; // how many years can live
+const SHEEP_DIE_RATE = 20; // percentage a sheep will die if health==0
+const SHEEP_SPEED = 2; // moving speed.
 
-const MAX_WOLF_DENSITY = 0.0012; // every piexl can have 0.001 WOLF
+const MAX_WOLF_DENSITY = 0.0012; // every piexl can have maximum 0.0012 WOLF
 const WOLF_HUNGARY = 80; // helth less than it start to find sheep and eat.
 const WOLF_HUNGARY_SPEED = 5; // helth reduce for every round without eating
 const WOLF_SPEED = 5;
@@ -40,8 +40,10 @@ const INIT_WOLF_NUM = 5; // the initial WOLF num
 const INIT_WOLF_GEN = 100; // WOLF appear after 100 generation.
 
 const grass = [];
-let sheep = [];
-let wolf = [];
+// let sheep = [];
+// let wolf = [];
+let spF = new SheepFamily();
+let wfF = new wolfFamily();
 let grassTotal;
 let generation;
 const history = [];
@@ -75,8 +77,8 @@ function calStat() {
     generation,
     grassTotal,
     grassGrow: grassTotal - pregrass,
-    sheepNum: sheep.length,
-    wolfNum: wolf.length,
+    sheepNum: spF.getMemberNumber(),
+    wolfNum: wfF.getMemberNumber(),
   });
   generation++;
 }
@@ -113,15 +115,16 @@ function draw() {
   drawGrass();
 
   const t1 = Date.now();
-  drawSheeps();
+  spF.run();
+  // drawSheeps();
   const t2 = Date.now();
-
-  drawWolfs();
+  wfF.run();
+  // drawWolfs();
   const t3 = Date.now();
 
   calStat();
-  if (generation === INIT_SHEEP_GEN) initSheep();
-  if (generation === INIT_WOLF_GEN) initWolf();
+  if (generation === INIT_SHEEP_GEN) spF.initFamily(); //initSheep();
+  if (generation === INIT_WOLF_GEN) wfF.initFamily(); //initWolf();
   drawInfo();
   const t4 = Date.now();
   // console.log(
